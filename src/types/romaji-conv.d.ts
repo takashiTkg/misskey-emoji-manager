@@ -1,0 +1,5 @@
+declare module "@koozaki/romaji-conv" {
+  export function toHiragana(text: string): string;
+  export function toKatakana(text: string): string;
+  export function toRomaji(text: string): string;
+}
