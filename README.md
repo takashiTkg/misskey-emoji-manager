@@ -1,5 +1,9 @@
 # Misskey Emoji Manager
 
+[![CI](https://github.com/takashiTkg/misskey-emoji-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/takashiTkg/misskey-emoji-manager/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/misskey-emoji-manager.svg)](https://badge.fury.io/js/misskey-emoji-manager)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Misskeyのカスタム絵文字をインポートするためのzipファイルを作成するツールです。
 
 ## 特徴
