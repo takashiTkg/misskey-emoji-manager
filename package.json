@@ -28,6 +28,14 @@
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takashiTkg/misskey-emoji-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/takashiTkg/misskey-emoji-manager/issues"
+  },
+  "homepage": "https://github.com/takashiTkg/misskey-emoji-manager#readme",
   "type": "commonjs",
   "dependencies": {
     "@koozaki/romaji-conv": "^2.0.32",
