@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import archiver from "archiver";
 import { Meta } from "./types";
+import { normalizeEmojiName } from "./emoji-processor";
 
 /**
  * Create a zip file for Misskey emoji import
@@ -41,8 +42,9 @@ export async function createEmojiZip(
         const originalFileName = path.basename(filePath);
         const ext = path.extname(originalFileName);
         const nameWithoutExt = path.basename(originalFileName, ext);
-        const normalized = nameWithoutExt.replace(/-/g, "_");
-        const newFileName = `${category}_${normalized}${ext}`;
+        const normalizedName = normalizeEmojiName(nameWithoutExt);
+        const normalizedCategory = normalizeEmojiName(category);
+        const newFileName = `${normalizedCategory}_${normalizedName}${ext}`;
         fileMap.set(newFileName, filePath);
       }
     }

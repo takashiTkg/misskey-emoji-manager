@@ -62,14 +62,41 @@ export function scanEmojiFiles(inputDir: string): Map<string, string[]> {
 }
 
 /**
+ * Normalize emoji name:
+ * - Convert hyphens to underscores
+ * - Remove spaces
+ */
+export function normalizeEmojiName(name: string): string {
+  return name.replace(/-/g, "_").replace(/\s/g, "");
+}
+
+/**
+ * Validate if emoji name matches Misskey's format: [a-zA-Z0-9_.]
+ */
+export function isValidEmojiName(name: string): boolean {
+  return /^[a-zA-Z0-9_.]+$/.test(name);
+}
+
+/**
  * Process emoji name:
  * - Add category prefix
- * - Convert hyphens to underscores
+ * - Normalize (convert hyphens to underscores, remove spaces)
+ * Returns null if the name is invalid after normalization
  */
-export function processEmojiName(fileName: string, category: string): string {
+export function processEmojiName(
+  fileName: string,
+  category: string
+): string | null {
   const nameWithoutExt = path.basename(fileName, path.extname(fileName));
-  const normalized = nameWithoutExt.replace(/-/g, "_");
-  return `${category}_${normalized}`;
+  const normalizedName = normalizeEmojiName(nameWithoutExt);
+  const normalizedCategory = normalizeEmojiName(category);
+  const fullName = `${normalizedCategory}_${normalizedName}`;
+
+  if (!isValidEmojiName(fullName)) {
+    return null;
+  }
+
+  return fullName;
 }
 
 /**
@@ -121,6 +148,7 @@ export function generateAliases(name: string): string[] {
 
 /**
  * Build meta.json structure from scanned files
+ * Invalid emoji names (NG2) are logged to console and skipped
  */
 export function buildMeta(categoryMap: Map<string, string[]>): Meta {
   const emojis: EmojiEntry[] = [];
@@ -129,6 +157,22 @@ export function buildMeta(categoryMap: Map<string, string[]>): Meta {
     for (const filePath of files) {
       const originalFileName = path.basename(filePath);
       const emojiName = processEmojiName(originalFileName, category);
+
+      // NG2: Skip invalid emoji names and log to console
+      if (emojiName === null) {
+        const nameWithoutExt = path.basename(
+          originalFileName,
+          path.extname(originalFileName)
+        );
+        const normalizedName = normalizeEmojiName(nameWithoutExt);
+        const normalizedCategory = normalizeEmojiName(category);
+        const attemptedName = `${normalizedCategory}_${normalizedName}`;
+        console.error(
+          `[NG2] Invalid emoji name (skipped): "${attemptedName}" (original: "${originalFileName}")`
+        );
+        continue;
+      }
+
       const aliases = generateAliases(emojiName);
       const ext = path.extname(originalFileName);
       const newFileName = `${emojiName}${ext}`;
