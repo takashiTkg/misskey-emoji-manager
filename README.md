@@ -14,7 +14,7 @@ Misskeyのカスタム絵文字をインポートするためのzipファイル�
   - ハイフンをアンダーバーに自動変換
   - スペースを自動削除
   - 無効な文字を含むファイルを自動検出してスキップ
-- ローマ字からひらがなへの変換でエイリアスを自動生成
+- オプションでローマ字からひらがなへの変換でエイリアスを生成
 - meta.jsonとzipファイルを生成
 
 ## インストール
@@ -28,13 +28,21 @@ npm install -g misskey-emoji-manager
 ### コマンドライン
 
 ```bash
-misskey-emoji-manager pack <入力ディレクトリ> [出力zipファイル]
+misskey-emoji-manager pack <入力ディレクトリ> [出力zipファイル] [オプション]
 ```
+
+**オプション:**
+
+- `--generate-aliases`: ローマ字からひらがなへの変換でエイリアスを生成します（デフォルトでは無効）
 
 **例:**
 
 ```bash
+# 基本的な使い方（エイリアス生成なし）
 misskey-emoji-manager pack ./emojis emoji-pack.zip
+
+# エイリアス生成を有効にする
+misskey-emoji-manager pack ./emojis emoji-pack.zip --generate-aliases
 ```
 
 ### ディレクトリ構造
@@ -70,9 +78,9 @@ emojis/
    - **無効なファイル検出**: 正規化後も無効な文字が含まれる場合はスキップしてコンソールに表示
      - 例: `絵文字.png` → `[NG2] Invalid emoji name (skipped): "animals_絵文字" (original: "絵文字.png")`
      - 例: `emoji@test.png` → スキップされます（`@`が無効な文字）
-4. **エイリアス生成**: アンダーバーで分割してローマ字からひらがなに変換
-   - 例: `animals_neko` → エイリアス: `["ねこ"]`
-   - 例: `animals_inu_san` → エイリアス: `["いぬ", "さん", "いぬさん"]`
+4. **エイリアス生成**（`--generate-aliases`オプション使用時）: アンダーバーで分割してローマ字からひらがなに変換
+   - 例: `animals_neko` → エイリアス: `["animals", "ねこ"]`
+   - 例: `animals_inu_san` → エイリアス: `["animals", "いぬ", "さん", "いぬさん"]`
 
 ### ファイル名の取り扱い
 
@@ -99,7 +107,9 @@ import {
 const categoryMap = scanEmojiFiles('./emojis');
 
 // メタデータを生成（無効なファイルは自動的にスキップされます）
-const meta = buildMeta(categoryMap);
+// 第2引数でエイリアス生成を有効化（デフォルト: false）
+const meta = buildMeta(categoryMap, false); // エイリアス生成なし
+// const meta = buildMeta(categoryMap, true); // エイリアス生成あり
 
 // zipファイルを作成
 await createEmojiZip(meta, categoryMap, 'emoji-pack.zip');
