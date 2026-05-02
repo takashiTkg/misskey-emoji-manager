@@ -24,35 +24,41 @@ program
     "--generate-aliases",
     "Generate aliases by converting romaji to hiragana (disabled by default)"
   )
-  .action(async (input: string, output: string, options: { generateAliases?: boolean }) => {
-    try {
-      console.log("Scanning emoji files...");
-      const categoryMap = scanEmojiFiles(input);
+  .action(
+    async (
+      input: string,
+      output: string,
+      options: { generateAliases?: boolean }
+    ) => {
+      try {
+        console.log("Scanning emoji files...");
+        const categoryMap = scanEmojiFiles(input);
 
-      if (categoryMap.size === 0) {
-        console.error("No emoji files found in the specified directory");
+        if (categoryMap.size === 0) {
+          console.error("No emoji files found in the specified directory");
+          process.exit(1);
+        }
+
+        console.log(`Found ${categoryMap.size} categories:`);
+        for (const [category, files] of categoryMap.entries()) {
+          console.log(`  - ${category}: ${files.length} files`);
+        }
+
+        console.log("\nBuilding metadata...");
+        const meta = buildMeta(categoryMap, options.generateAliases ?? false);
+
+        console.log(`Total emojis: ${meta.emojis.length}`);
+
+        console.log("\nCreating zip file...");
+        const outputPath = path.resolve(output);
+        await createEmojiZip(meta, categoryMap, outputPath);
+
+        console.log("\nDone!");
+      } catch (error) {
+        console.error("Error:", error);
         process.exit(1);
       }
-
-      console.log(`Found ${categoryMap.size} categories:`);
-      for (const [category, files] of categoryMap.entries()) {
-        console.log(`  - ${category}: ${files.length} files`);
-      }
-
-      console.log("\nBuilding metadata...");
-      const meta = buildMeta(categoryMap, options.generateAliases ?? false);
-
-      console.log(`Total emojis: ${meta.emojis.length}`);
-
-      console.log("\nCreating zip file...");
-      const outputPath = path.resolve(output);
-      await createEmojiZip(meta, categoryMap, outputPath);
-
-      console.log("\nDone!");
-    } catch (error) {
-      console.error("Error:", error);
-      process.exit(1);
     }
-  });
+  );
 
 program.parse();

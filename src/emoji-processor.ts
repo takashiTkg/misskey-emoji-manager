@@ -152,7 +152,10 @@ export function generateAliases(name: string): string[] {
  * @param categoryMap Map of categories to file paths
  * @param shouldGenerateAliases Whether to generate aliases from romaji (default: false)
  */
-export function buildMeta(categoryMap: Map<string, string[]>, shouldGenerateAliases: boolean = false): Meta {
+export function buildMeta(
+  categoryMap: Map<string, string[]>,
+  shouldGenerateAliases: boolean = false
+): Meta {
   const emojis: EmojiEntry[] = [];
 
   for (const [category, files] of categoryMap.entries()) {
