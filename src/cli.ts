@@ -20,7 +20,11 @@ program
     "Input directory containing emoji images (subdirectories will be used as categories)"
   )
   .argument("[output]", "Output zip file path", "emoji-pack.zip")
-  .action(async (input: string, output: string) => {
+  .option(
+    "--generate-aliases",
+    "Generate aliases by converting romaji to hiragana (disabled by default)"
+  )
+  .action(async (input: string, output: string, options: { generateAliases?: boolean }) => {
     try {
       console.log("Scanning emoji files...");
       const categoryMap = scanEmojiFiles(input);
@@ -36,7 +40,7 @@ program
       }
 
       console.log("\nBuilding metadata...");
-      const meta = buildMeta(categoryMap);
+      const meta = buildMeta(categoryMap, options.generateAliases ?? false);
 
       console.log(`Total emojis: ${meta.emojis.length}`);
 

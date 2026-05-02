@@ -149,8 +149,10 @@ export function generateAliases(name: string): string[] {
 /**
  * Build meta.json structure from scanned files
  * Invalid emoji names (NG2) are logged to console and skipped
+ * @param categoryMap Map of categories to file paths
+ * @param shouldGenerateAliases Whether to generate aliases from romaji (default: false)
  */
-export function buildMeta(categoryMap: Map<string, string[]>): Meta {
+export function buildMeta(categoryMap: Map<string, string[]>, shouldGenerateAliases: boolean = false): Meta {
   const emojis: EmojiEntry[] = [];
 
   for (const [category, files] of categoryMap.entries()) {
@@ -173,7 +175,7 @@ export function buildMeta(categoryMap: Map<string, string[]>): Meta {
         continue;
       }
 
-      const aliases = generateAliases(emojiName);
+      const aliases = shouldGenerateAliases ? generateAliases(emojiName) : [];
       const ext = path.extname(originalFileName);
       const newFileName = `${emojiName}${ext}`;
 

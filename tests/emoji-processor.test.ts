@@ -206,7 +206,7 @@ describe("scanEmojiFiles", () => {
 });
 
 describe("buildMeta", () => {
-  it("should build meta structure from category map", () => {
+  it("should build meta structure with aliases disabled by default", () => {
     const categoryMap = new Map<string, string[]>();
     categoryMap.set("animals", ["/path/to/neko.png", "/path/to/inu-san.gif"]);
     categoryMap.set("food", ["/path/to/ramen.png"]);
@@ -218,6 +218,17 @@ describe("buildMeta", () => {
     expect(meta.emojis[0].fileName).toBe("animals_neko.png");
     expect(meta.emojis[0].emoji.name).toBe("animals_neko");
     expect(meta.emojis[0].emoji.category).toBe("animals");
+    expect(meta.emojis[0].emoji.aliases).toEqual([]);
+  });
+
+  it("should generate aliases when enabled", () => {
+    const categoryMap = new Map<string, string[]>();
+    categoryMap.set("animals", ["/path/to/neko.png", "/path/to/inu-san.gif"]);
+    categoryMap.set("food", ["/path/to/ramen.png"]);
+
+    const meta = buildMeta(categoryMap, true);
+
+    expect(meta.emojis).toHaveLength(3);
     expect(meta.emojis[0].emoji.aliases).toContain("animals");
     expect(meta.emojis[0].emoji.aliases).toContain("ねこ");
   });
